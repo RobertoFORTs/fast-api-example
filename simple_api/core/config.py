@@ -3,9 +3,12 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     env: Literal["dev", "prod"] = "dev"
-    app_name: str = "example-api"
+    app_name: str = "simple-api"
+    database_url: str
 
-    class Config:
-        env_file = ".env"
+    model_config = {
+        "env_file": ".env",
+        "env_file_encoding": "utf-8"
+    }
 
 settings = Settings()
