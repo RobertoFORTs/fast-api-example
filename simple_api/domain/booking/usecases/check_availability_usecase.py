@@ -12,4 +12,5 @@ class CheckAvailabilityUseCase:
             property_id, start_date, end_date
         )
         if overlapping:
-            raise ValueError("O imóvel não está disponível nas datas selecionadas")
+            return False
+        return True

@@ -32,9 +32,11 @@ class BookingService:
 
         self.validate_dates_uc.execute(booking_in.start_date, booking_in.end_date)
 
-        await self.check_availability_uc.execute(
+        is_available = await self.check_availability_uc.execute(
             booking_in.property_id, booking_in.start_date, booking_in.end_date
         )
+        if is_available == False:
+            raise ValueError("Property not available at given dates")
         
         exceeds_maximum_capacity = booking_in.guests_quantity > property_obj.capacity
 
@@ -66,6 +68,6 @@ class BookingService:
     
     async def is_available(self, property_id: str, start_date: date, end_date: date) -> bool:
         
-        await self.check_availability_uc(property_id, start_date, end_date)
-        return True
+        respose_is_available = await self.check_availability_uc(property_id, start_date, end_date)
+        return respose_is_available
     
