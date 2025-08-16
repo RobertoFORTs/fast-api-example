@@ -23,3 +23,12 @@ class BookingRepository(BaseRepository[Booking]):
             )
             result = await db.execute(query)
             return result.scalars().all()
+    
+    async def get_bookings(self, property_id=None, client_email=None):
+        query = select(Booking)
+        if property_id:
+            query = query.where(Booking.property_id == property_id)
+        if client_email:
+            query = query.where(Booking.client_email == client_email)
+        result = await self.session.execute(query)
+        return result.scalars().all()

@@ -13,9 +13,16 @@ class BookingCreate(BaseModel):
     guests_quantity: int = Field(..., gt=0)
 
 
-class BookingResponse(BookingCreate):
+class BookingResponseWithPrice(BookingCreate):
     id: UUID
     price: Decimal
+
+    model_config = {
+        "from_attributes": True
+    }
+
+class BookingResponse(BookingCreate):
+    id: UUID
 
     model_config = {
         "from_attributes": True

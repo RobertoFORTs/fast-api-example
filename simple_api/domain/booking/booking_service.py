@@ -1,7 +1,8 @@
+from typing import Optional
 from simple_api.infra.models.booking import Booking
 from simple_api.infra.repositories.booking_repository import BookingRepository
 from simple_api.infra.repositories.property_repository import PropertyRepository
-from simple_api.schemas.booking import BookingCreate, BookingResponse
+from simple_api.schemas.booking import BookingCreate, BookingResponse, BookingResponseWithPrice
 from simple_api.domain.booking.usecases.check_availability_usecase import CheckAvailabilityUseCase
 from simple_api.domain.booking.usecases.validate_booking_dates_usecase import ValidateBookingDatesUseCase
 from simple_api.domain.booking.usecases.calculate_booking_price_usecase import CalculateBookingPriceUseCase
@@ -22,7 +23,7 @@ class BookingService:
         self.validate_dates_uc = validate_dates_uc
         self.calc_price_uc = calc_price_uc
 
-    async def create_booking(self, booking_in: BookingCreate) -> BookingResponse:
+    async def create_booking(self, booking_in: BookingCreate) -> BookingResponseWithPrice:
   
         property_obj = await self.property_repo.get_by_id(booking_in.property_id)
         if not property_obj:
@@ -46,7 +47,10 @@ class BookingService:
         booking_obj = Booking(**booking_in.model_dump())
         created = await self.booking_repo.create(booking_obj)
 
-        return BookingResponse.model_validate({
+        return BookingResponseWithPrice.model_validate({
             **created.__dict__,
             "price": price
         })
+
+    async def list_bookings(self, property_id: Optional[str] = None, client_email: Optional[str] = None):
+        return await self.booking_repo.get_bookings(property_id=property_id, client_email=client_email)
