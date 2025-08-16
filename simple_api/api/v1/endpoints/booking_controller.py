@@ -1,3 +1,4 @@
+from datetime import date
 from typing import List, Optional
 from fastapi import APIRouter, Depends
 from simple_api.schemas.booking import BookingCreate, BookingResponse, BookingResponseWithPrice
@@ -29,3 +30,11 @@ async def cancel_booking(
 
     await service.cancel_booking(booking_id)
     return {"message": "Reserva cancelada com sucesso"}
+
+@router.get("/properties/{property_id}/availability")
+async def check_availability(property_id: str, start_date: date, end_date: date, service: BookingService = Depends(get_booking_service)):
+    """
+    Verificar disponibilidade de uma propriedade entre datas.
+    """
+    available = await service.is_available(property_id, start_date, end_date)
+    return {"available": available}
