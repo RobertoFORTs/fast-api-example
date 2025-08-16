@@ -8,6 +8,7 @@ from core.logging import log
 async def lifespan(app: FastAPI):
     log.info("Application startup")
     try:
+        app.state.db_engine = engine
         with engine.connect() as conn:
             log.info("Database connection successful!")
     except SQLAlchemyError as e:
@@ -17,3 +18,4 @@ async def lifespan(app: FastAPI):
     yield
 
     log.info("Application shutdown")
+    app.state.db_engine.dispose()
