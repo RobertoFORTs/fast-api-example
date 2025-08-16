@@ -54,3 +54,9 @@ class BookingService:
 
     async def list_bookings(self, property_id: Optional[str] = None, client_email: Optional[str] = None):
         return await self.booking_repo.get_bookings(property_id=property_id, client_email=client_email)
+    
+    async def cancel_booking(self, booking_id: str):
+        booking = await self.booking_repo.get_by_id(booking_id)
+        if not booking:
+            raise ValueError("Reserva não encontrada")
+        await self.booking_repo.delete(booking)

@@ -20,3 +20,12 @@ async def list_bookings(
     service: BookingService = Depends(get_booking_service),
     ):
     return await service.list_bookings(property_id=property_id, client_email=client_email)
+
+@router.delete("/bookings/{booking_id}")
+async def cancel_booking(
+    booking_id: str,
+    service: BookingService = Depends(get_booking_service),
+    ):
+
+    await service.cancel_booking(booking_id)
+    return {"message": "Reserva cancelada com sucesso"}
