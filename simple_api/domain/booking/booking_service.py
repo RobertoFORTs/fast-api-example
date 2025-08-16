@@ -3,7 +3,7 @@ from typing import Optional
 from simple_api.infra.models.booking import Booking
 from simple_api.infra.repositories.booking_repository import BookingRepository
 from simple_api.infra.repositories.property_repository import PropertyRepository
-from simple_api.schemas.booking import BookingCreate, BookingResponse, BookingResponseWithPrice
+from simple_api.schemas.booking import BookingCreate, BookingFilter, BookingResponse, BookingResponseWithPrice, PaginatedBookingResponse
 from simple_api.domain.booking.usecases.check_availability_usecase import CheckAvailabilityUseCase
 from simple_api.domain.booking.usecases.validate_booking_dates_usecase import ValidateBookingDatesUseCase
 from simple_api.domain.booking.usecases.calculate_booking_price_usecase import CalculateBookingPriceUseCase
@@ -55,9 +55,13 @@ class BookingService:
             "price": price
         })
 
-    async def list_bookings(self, property_id: Optional[str] = None, client_email: Optional[str] = None):
-        
-        return await self.booking_repo.get_bookings(property_id=property_id, client_email=client_email)
+    async def list_bookings(self, filters: BookingFilter) -> PaginatedBookingResponse:
+        result = await self.booking_repo.get_filtered(filters)
+
+        items = [BookingResponse.model_validate(b) for b in result["items"]]
+        total = result["total"]
+
+        return PaginatedBookingResponse(total=total, items=items)
     
     async def cancel_booking(self, booking_id: str):
         

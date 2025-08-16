@@ -1,9 +1,10 @@
 from datetime import date
 from typing import List
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from simple_api.infra.models.booking import Booking
 from simple_api.infra.repositories.base_repository import BaseRepository
+from simple_api.schemas.booking import BookingFilter
 
 class BookingRepository(BaseRepository[Booking]):
     def __init__(self):
@@ -24,11 +25,24 @@ class BookingRepository(BaseRepository[Booking]):
             result = await db.execute(query)
             return result.scalars().all()
     
-    async def get_bookings(self, property_id=None, client_email=None):
-        query = select(Booking)
-        if property_id:
-            query = query.where(Booking.property_id == property_id)
-        if client_email:
-            query = query.where(Booking.client_email == client_email)
-        result = await self.session.execute(query)
-        return result.scalars().all()
+
+
+    async def get_filtered(self, filters: BookingFilter):
+        async for db in self._get_session():
+            base_query = select(self.model)
+
+            if filters.property_id:
+                base_query = base_query.where(Booking.property_id == filters.property_id)
+            if filters.client_email:
+                base_query = base_query.where(Booking.client_email == filters.client_email)
+
+            offset = (filters.skip - 1) * filters.limit
+            paginated_query = base_query.offset(offset).limit(filters.limit)
+            result = await db.execute(paginated_query)
+            items = result.scalars().all()
+
+            count_query = select(func.count()).select_from(base_query.subquery())
+            total_result = await db.execute(count_query)
+            total = total_result.scalar_one()
+
+            return {"items": items, "total": total}

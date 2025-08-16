@@ -1,7 +1,7 @@
 from typing import List, Optional
 from fastapi import APIRouter, Depends
 from datetime import date
-from simple_api.schemas.booking import BookingCreate, BookingResponse, BookingResponseWithPrice
+from simple_api.schemas.booking import BookingCreate, BookingFilter, BookingResponse, BookingResponseWithPrice
 from simple_api.domain.booking.booking_service import BookingService
 from simple_api.dependencies.booking_deps import get_booking_service
 
@@ -23,10 +23,9 @@ class BookingController:
 
     async def list_bookings(
         self,
-        property_id: Optional[str] = None,
-        client_email: Optional[str] = None,
+        filters: BookingFilter = Depends(),
     ):
-        return await self.service.list_bookings(property_id=property_id, client_email=client_email)
+        return await self.service.list_bookings(filters)
 
     async def cancel_booking(self, booking_id: str):
         await self.service.cancel_booking(booking_id)
