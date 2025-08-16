@@ -14,6 +14,7 @@ structlog = "^25.4.0"
 sqlalchemy = "^2.0.43"
 psycopg2-binary = "^2.9.10"
 alembic = "^1.16.4"
+httpx = "^0.28.1"
 
 
 [build-system]
