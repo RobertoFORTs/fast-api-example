@@ -18,8 +18,8 @@ class BookingRepository(BaseRepository[Booking]):
         async for db in self._get_session():
             query = select(self.model).where(
                 (self.model.property_id == property_id) &
-                (self.model.end_date >= start_date) &
-                (self.model.start_date <= end_date) 
+                (self.model.end_date > start_date) &
+                (self.model.start_date < end_date) 
             )
             result = await db.execute(query)
             return result.scalars().all()
