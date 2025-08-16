@@ -9,7 +9,7 @@ class BookingRepository(BaseRepository[Booking]):
     def __init__(self):
         super().__init__(Booking)
     
-    async def get_bookings_for_property_in_period(
+    async def get_overlapping_bookings(
         self, property_id, start_date: date, end_date: date
     ) -> List[Booking]:
         """
