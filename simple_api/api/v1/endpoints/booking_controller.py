@@ -1,40 +1,43 @@
-from datetime import date
 from typing import List, Optional
 from fastapi import APIRouter, Depends
+from datetime import date
 from simple_api.schemas.booking import BookingCreate, BookingResponse, BookingResponseWithPrice
 from simple_api.domain.booking.booking_service import BookingService
 from simple_api.dependencies.booking_deps import get_booking_service
 
-router = APIRouter()
+class BookingController:
+    def __init__(self, service: BookingService = Depends(get_booking_service)):
+        self.service = service
+        self.router = APIRouter()
+        self.register_routes()
 
-@router.post("/", response_model=BookingResponseWithPrice)
-async def create_booking(
-    booking_in: BookingCreate,
-    service: BookingService = Depends(get_booking_service),
-):
-    return await service.create_booking(booking_in)
+    def register_routes(self):
+        self.router.post("/", response_model=BookingResponseWithPrice)(self.create_booking)
+        self.router.get("/", response_model=List[BookingResponse])(self.list_bookings)
+        self.router.delete("/{booking_id}")(self.cancel_booking)
+        self.router.get("/properties/{property_id}/availability")(self.check_availability)
 
-@router.get("/", response_model=List[BookingResponse])
-async def list_bookings(
-    property_id: Optional[str] = None, 
-    client_email: Optional[str] = None,
-    service: BookingService = Depends(get_booking_service),
+
+    async def create_booking(self, booking_in: BookingCreate):
+        return await self.service.create_booking(booking_in)
+
+    async def list_bookings(
+        self,
+        property_id: Optional[str] = None,
+        client_email: Optional[str] = None,
     ):
-    return await service.list_bookings(property_id=property_id, client_email=client_email)
+        return await self.service.list_bookings(property_id=property_id, client_email=client_email)
 
-@router.delete("/bookings/{booking_id}")
-async def cancel_booking(
-    booking_id: str,
-    service: BookingService = Depends(get_booking_service),
+    async def cancel_booking(self, booking_id: str):
+        await self.service.cancel_booking(booking_id)
+        return {"message": "Reserva cancelada com sucesso"}
+
+    async def check_availability(
+        self,
+        property_id: str,
+        start_date: date,
+        end_date: date,
     ):
+        available = await self.service.is_available(property_id, start_date, end_date)
+        return {"available": available}
 
-    await service.cancel_booking(booking_id)
-    return {"message": "Reserva cancelada com sucesso"}
-
-@router.get("/properties/{property_id}/availability")
-async def check_availability(property_id: str, start_date: date, end_date: date, service: BookingService = Depends(get_booking_service)):
-    """
-    Verificar disponibilidade de uma propriedade entre datas.
-    """
-    available = await service.is_available(property_id, start_date, end_date)
-    return {"available": available}
