@@ -1,31 +1,27 @@
+from contextlib import asynccontextmanager
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncEngine
+from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy import MetaData
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
 from simple_api.core.config import settings
 
-DATABASE_URL = settings.database_url
+DATABASE_URL = settings.database_url.replace("postgresql://", "postgresql+asyncpg://")
 
-engine = create_engine(
+engine: AsyncEngine = create_async_engine(
     DATABASE_URL,
-    echo=settings.env != "prod",  
-    pool_size=10,                 
-    max_overflow=20,              
-    future=True,
+    echo=settings.env != "prod",
+    pool_size=10,
+    max_overflow=20,
 )
 
-SessionLocal = sessionmaker(
-    autocommit=False,
-    autoflush=False,
+SessionLocal = async_sessionmaker(
     bind=engine,
-    future=True,
+    expire_on_commit=False,
 )
 
-Base = declarative_base(metadata=MetaData(schema="public"))
+class Base(DeclarativeBase):
+    metadata = MetaData(schema="public")
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+@asynccontextmanager
+async def get_db():
+    async with SessionLocal() as session:
+        yield session
