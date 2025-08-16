@@ -1,8 +1,8 @@
 from fastapi import FastAPI, Request
-from core.config import settings
-from core.logging import log
-from core.lifespan import lifespan
-from api.v1.routers import router as v1_router
+from simple_api.core.config import settings
+from simple_api.core.logging import log
+from simple_api.core.lifespan import lifespan
+from simple_api.api.v1.routers import router as v1_router
 from fastapi.middleware.cors import CORSMiddleware
 import time
 
