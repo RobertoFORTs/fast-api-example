@@ -68,10 +68,10 @@ class BookingService:
         booking = await self.booking_repo.get_by_id(booking_id)
         if not booking:
             raise ValueError("Reserva não encontrada")
-        await self.booking_repo.delete(booking)
+        await self.booking_repo.delete(booking.id)
     
     async def is_available(self, property_id: str, start_date: date, end_date: date) -> bool:
-        
-        respose_is_available = await self.check_availability_uc(property_id, start_date, end_date)
+        self.validate_dates_uc.execute(start_date, end_date)
+        respose_is_available = await self.check_availability_uc.execute(property_id, start_date, end_date)
         return respose_is_available
     

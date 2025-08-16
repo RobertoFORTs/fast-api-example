@@ -1,4 +1,5 @@
 from typing import Type, TypeVar, Generic, AsyncGenerator
+from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from simple_api.infra.db import get_db
@@ -33,8 +34,7 @@ class BaseRepository(Generic[T]):
 
     async def delete(self, id):
         async for db in self._get_session():
-            obj = await self.get_by_id(id)
-            if obj:
-                await db.delete(obj)
-                await db.commit()
-            return obj
+            stmt = delete(self.model).where(self.model.id == id)
+            result = await db.execute(stmt)
+            await db.commit()
+            return result.rowcount
