@@ -6,12 +6,34 @@ from decimal import Decimal
 
 
 class BookingCreate(BaseModel):
-    property_id: UUID
-    client_name: str = Field(..., min_length=1, max_length=255, pattern=r'^[a-zA-Z\s]+$')
-    client_email: EmailStr
-    start_date: date
-    end_date: date
-    guests_quantity: int = Field(..., gt=0)
+    property_id: UUID = Field(
+        ...,
+        example="123e4567-e89b-12d3-a456-426614174000"
+    )
+    client_name: str = Field(
+        ...,
+        min_length=1,
+        max_length=255,
+        pattern=r'^[a-zA-Z\s]+$',
+        example="John Doe"
+    )
+    client_email: EmailStr = Field(
+        ...,
+        example="john.doe@example.com"
+    )
+    start_date: date = Field(
+        ...,
+        example="2026-01-01"
+    )
+    end_date: date = Field(
+        ...,
+        example="2026-01-05"
+    )
+    guests_quantity: int = Field(
+        ...,
+        gt=0,
+        example=2
+    )
 
 class BookingFilter(BaseModel):
     property_id: Optional[UUID] = None

@@ -4,16 +4,16 @@ from uuid import UUID
 from decimal import Decimal
 
 class PropertyCreate(BaseModel):
-    title: str
-    address_street: str
-    address_number: str = Field(..., pattern=r"^\d+$")
-    address_neighborhood: str = Field(..., pattern=r"^[a-zA-Z\s]+$")
-    address_city: str = Field(..., pattern=r"^[a-zA-Z\s]+$")
-    address_state: str = Field(..., min_length=2, max_length=2)
-    country: str = Field(..., min_length=2, max_length=2)
-    rooms: int
-    capacity: int
-    price_per_night: Decimal = Field(..., gt=0)
+    title: str = Field(..., example="Casa na Praia com Vista para o Mar")
+    address_street: str = Field(..., example="Rua das Palmeiras")
+    address_number: str = Field(..., pattern=r"^\d+$", example="123")
+    address_neighborhood: str = Field(..., pattern=r"^[a-zA-Z\s]+$", example="Jurerê Internacional")
+    address_city: str = Field(..., pattern=r"^[a-zA-Z\s]+$", example="Florianópolis")
+    address_state: str = Field(..., min_length=2, max_length=2, example="SC")
+    country: str = Field(..., min_length=2, max_length=2, example="BR")
+    rooms: int = Field(..., example=3)
+    capacity: int = Field(..., example=6)
+    price_per_night: Decimal = Field(..., gt=0, example=350.00)
 
     @field_validator("address_state", "country", mode="before")
     def to_uppercase(cls, v: str) -> str:
