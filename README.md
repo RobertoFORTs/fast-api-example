@@ -53,3 +53,4 @@ ADR.04: Usage of pydantics BaseModel for data validation, transfer and documenta
     - Apply the FACADE Design Pattern between models
 - Add of Integration Tests
 - Implementation of Fitness Functions
+- Validation for duplicate properties
