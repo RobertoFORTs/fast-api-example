@@ -5,6 +5,7 @@ from simple_api.infra.db import Base
 
 class Property(Base):
     __tablename__ = "properties"
+    __table_args__ = {"schema": "public"}
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, nullable=False)
     title = Column(String(255), nullable=False)

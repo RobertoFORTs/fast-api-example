@@ -5,6 +5,7 @@ from simple_api.infra.db import Base
 
 class Booking(Base):
     __tablename__ = "bookings"
+    __table_args__ = {"schema": "public"}
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, nullable=False)
     property_id = Column(UUID(as_uuid=True), ForeignKey("properties.id"), nullable=False)

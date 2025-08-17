@@ -54,3 +54,15 @@ ADR.04: Usage of pydantics BaseModel for data validation, transfer and documenta
 - Add of Integration Tests
 - Implementation of Fitness Functions
 - Validation for duplicate properties
+
+
+psql -U postgres
+CREATE DATABASE simple_api_db;
+\c simple_api_db
+CREATE USER admin WITH PASSWORD '123';
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
+ALTER SCHEMA public OWNER TO admin;
+GRANT ALL PRIVILEGES ON SCHEMA public TO admin;
+alembic revision --autogenerate -m "initial schema"
+alembic upgrade head
