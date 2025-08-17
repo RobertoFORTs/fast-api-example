@@ -1,4 +1,5 @@
 from typing import List, Optional
+from uuid import UUID
 from fastapi import APIRouter, Depends
 from datetime import date
 from simple_api.schemas.booking import BookingCreate, BookingFilter, BookingResponseWithPrice, PaginatedBookingResponse
@@ -26,7 +27,7 @@ class BookingController:
         await service.cancel_booking(booking_id)
         return {"message": "Reserva cancelada com sucesso"}
 
-    async def check_availability(self, property_id: str, start_date: date, end_date: date, service: BookingService = Depends(get_booking_service)):
+    async def check_availability(self, property_id: UUID, start_date: date, end_date: date, service: BookingService = Depends(get_booking_service)):
         available = await service.is_available(property_id, start_date, end_date)
         return {"available": available}
 

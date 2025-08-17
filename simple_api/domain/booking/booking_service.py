@@ -1,4 +1,5 @@
 from datetime import date
+from uuid import UUID
 from simple_api.domain.exceptions.domain_exception import ConflictException, NotFoundException, ValidationException
 from simple_api.infra.models.booking import Booking
 from simple_api.infra.repositories.booking_repository import BookingRepository
@@ -67,7 +68,10 @@ class BookingService:
             raise NotFoundException("Booking not found")
         await self.booking_repo.delete(booking.id)
     
-    async def is_available(self, property_id: str, start_date: date, end_date: date) -> bool:
+    async def is_available(self, property_id: UUID, start_date: date, end_date: date) -> bool:
+        property_obj = await self.property_repo.get_by_id(property_id)
+        if not property_obj:
+            raise NotFoundException("Property not found")
         self.validate_dates_uc.execute(start_date, end_date)
         respose_is_available = await self.check_availability_uc.execute(property_id, start_date, end_date)
         return respose_is_available

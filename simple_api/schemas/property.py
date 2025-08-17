@@ -2,13 +2,12 @@ from typing import Annotated, List, Optional
 from pydantic import BaseModel, Field, field_validator
 from uuid import UUID
 from decimal import Decimal
-
 class PropertyCreate(BaseModel):
     title: str = Field(..., example="Casa na Praia com Vista para o Mar")
     address_street: str = Field(..., example="Rua das Palmeiras")
-    address_number: str = Field(..., pattern=r"^\d+$", example="123")
-    address_neighborhood: str = Field(..., pattern=r"^[a-zA-Z\s]+$", example="Jurerê Internacional")
-    address_city: str = Field(..., pattern=r"^[a-zA-Z\s]+$", example="Florianópolis")
+    address_number: str = Field(..., pattern=r"^\d+$", example="41")
+    address_neighborhood: str = Field(..., pattern=r"^[a-zA-ZÀ-ÿ\s]+$", example="Jurerê Internacional")
+    address_city: str = Field(..., pattern=r"^[a-zA-ZÀ-ÿ\s]+$", example="Florianópolis")
     address_state: str = Field(..., min_length=2, max_length=2, example="SC")
     country: str = Field(..., min_length=2, max_length=2, example="BR")
     rooms: int = Field(..., example=3)
