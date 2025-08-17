@@ -18,7 +18,11 @@ httpx = "^0.28.1"
 asyncpg = "^0.30.0"
 email-validator = "^2.2.0"
 faker = "^37.5.3"
+pytest = "^8.4.1"
 
+
+[tool.poetry.group.dev.dependencies]
+pytest-asyncio = "^1.1.0"
 
 [build-system]
 requires = ["poetry-core"]

@@ -2,97 +2,138 @@
 
 A basic API project designed for demonstration and learning purposes.
 
-## Summary
+## Table of Contents
 
-- [**Description:**](#description) Overview of the project and its purpose.
-- [**Architecture:**](#architecture) Main components and structure.
-- [**Testing:**](#testing) How to test the project.
-- [**How to Run:**](#how-to-run) Steps to start the API.
-- [**Limitations:**](#limitations) Known issues or constraints.
-- [**Possible Improvements:**](#possible-improvements) Suggestions for future enhancements.
+- [Description](#description)
+- [Architecture](#architecture)
+- [How to Run](#how-to-run)
+- [Testing](#testing)
+- [Limitations](#limitations)
+- [Possible Improvements](#possible-improvements)
 
 ---
 
 ## Description
 
-This project implements a simple RESTful API using python FastAPI. It serves as a template for building maintainable backend services.
+This project implements a simple RESTful API using **FastAPI** in Python. It serves as a template for building maintainable backend services, focusing on simplicity, scalability, and ease of use for learning purposes.
+
+---
 
 ## Architecture
 
-- **Framework:** FastAPI
-- **Endpoints:** Acessible through ```http://localhost:3000/docs``` (you have to be running the application)
-- **Database:** PostgreSQL + ORM (SQLAlchemy)
-- **Structure:** 3 layer architecture (api-domain-infra)
+- **Framework**: FastAPI
+- **Endpoints**: Accessible through `http://localhost:3000/docs` (available when the application is running)
+- **Database**: PostgreSQL with SQLAlchemy ORM
+- **Structure**: 3-layer architecture (API, Domain, Infrastructure)
 
-ADR.01: The choice of the 3 layer architecture was given by the simplicity of the challenge, focusing on delivering all main functionalities in a simple but scalable and mantainable manner. 
+### Architectural Decision Records (ADRs)
 
-ADR.02: The decision to use an async database engine over synchronous was made to optimize performance in I/O-bound operations. Async operations allow the API to handle multiple database queries concurrently without blocking, resulting in better throughput and reduced latency, especially under high load scenarios.
-ADR.02: The decision to use an async database engine over synchronous was made to optimize performance in I/O-bound operations. Async operations allow the API to handle multiple database queries concurrently without blocking, resulting in better throughput and reduced latency, especially under high load scenarios.
+**ADR.01: 3-Layer Architecture**  
+The 3-layer architecture (API, Domain, Infrastructure) was chosen for its simplicity, ensuring the delivery of core functionalities in a scalable and maintainable way.
 
-ADR.03: Implementation of a generic base repository pattern provides a consistent interface for data access operations. This approach reduces code duplication, standardizes database interactions, and simplifies maintenance by centralizing common CRUD operations in a single, reusable component. The base repository can be extended for specific entity requirements while maintaining a uniform data access pattern across the application.
+**ADR.02: Async Database Engine**  
+An asynchronous database engine was selected over a synchronous one to optimize performance for I/O-bound operations. Async operations enable concurrent database queries without blocking, improving throughput and reducing latency, especially under high load.
 
-ADR.04: Usage of pydantics BaseModel for data validation, transfer and documentation. The use of pydantics easily satisfy all these requirements and provides a simple way of integrating with swagger and validating data input / output
+**ADR.03: Generic Base Repository Pattern**  
+A generic base repository pattern was implemented to provide a consistent interface for data access operations. This reduces code duplication, standardizes database interactions, and simplifies maintenance by centralizing common CRUD operations in a reusable component.
 
-## Testing
+**ADR.04: Pydantic BaseModel**  
+Pydantic's `BaseModel` is used for data validation, transfer, and documentation. It integrates seamlessly with Swagger for API documentation and provides robust validation for input/output data.
 
+---
 
 ## How to Run
 
-git clone url
+Follow these steps to set up and run the API locally:
 
-Install poetry
+1. **Clone the Repository**  
+   ```bash
+   git clone <repository-url>
+   cd simple_api
+   ```
 
-poetry shell
+2. **Install Poetry**  
+   Ensure Poetry is installed. If not, install it using:
+   ```bash
+   pip install poetry
+   ```
 
-install depedencies with poetry
+3. **Activate Poetry Virtual Environment**  
+   ```bash
+   poetry shell
+   ```
 
-This is a sample data tutorial to create your database and correctly use your url
+4. **Install Dependencies**  
+   Install project dependencies using Poetry:
+   ```bash
+   poetry install
+   ```
 
-Create DATABASE:
-psql -U postgres
-CREATE DATABASE simple_api_db;
-\c simple_api_db
-CREATE USER admin WITH PASSWORD '123';
-DROP SCHEMA public CASCADE;
-CREATE SCHEMA public;
-ALTER SCHEMA public OWNER TO admin;
-GRANT ALL PRIVILEGES ON SCHEMA public TO admin;
+5. **Set Up the Database**  
+   Create a PostgreSQL database and user with the following commands:
+   ```sql
+   psql -U postgres
+   CREATE DATABASE simple_api_db;
+   \c simple_api_db
+   CREATE USER admin WITH PASSWORD '123';
+   DROP SCHEMA public CASCADE;
+   CREATE SCHEMA public;
+   ALTER SCHEMA public OWNER TO admin;
+   GRANT ALL PRIVILEGES ON SCHEMA public TO admin;
+   ```
 
-Set up .env following the template
-ENV= "dev" | "prod"
+6. **Configure Environment Variables**  
+   Create a `.env` file based on the template below:
+   ```env
+   ENV="dev" # or "prod"
+   APP_NAME="Simple API"
+   DATABASE_URL=postgresql+asyncpg://admin:123@localhost/simple_api_db
+   ```
 
-APP_NAME=
+7. **Run Database Migrations**  
+   Export the `DATABASE_URL` and apply migrations:
+   ```bash
+   export DATABASE_URL=postgresql+asyncpg://admin:123@localhost/simple_api_db
+   alembic upgrade head
+   ```
 
-ex.:
-DATABASE_URL=postgresql+asyncpg://admin:123@localhost/simple_api_db
+8. **Run the Application**  
+   Start the FastAPI server:
+   ```bash
+   poetry shell
+   cd simple_api
+   poetry run uvicorn main:app --reload
+   ```
 
-Run migrations:
-export DATABASE_URL=your_url
-alembic revision --autogenerate -m "initial schema"
-alembic upgrade head
+9. **Access the API**  
+   Open a browser and navigate to:
+   ```
+   http://localhost:3000/docs
+   ```
 
-Run app:
+---
 
-poetry run uvicorn main:app --reload
+## Testing
 
-access the localhost link and append "/docs" to the url
+To test the API, use the interactive Swagger UI at `http://localhost:3000/docs` to explore and test endpoints. Ensure the application and database are running before testing.
+
+---
 
 ## Limitations
 
-- To generate a new migration you have to export the .env in the current terminal before running the alembic command
-- There is no current deploy for this application. You have to run through localhost and test it locally.
-- Both the DB and the application have to be initialized separatelly (check improvements - docker session)
+- **Manual Migration Setup**: The `.env` file must be exported in the terminal before running Alembic migrations.
+- **Local Environment Only**: The application currently runs only on `localhost` with no deployment setup.
+- **Separate Initialization**: The database and application must be initialized separately.
+
+---
 
 ## Possible Improvements
 
-- Use docker to containerize application and facilitate set up of environments
-- Upgrade Architecture to Hexagonal + DDD + Modular Monolith approach (Only if there is prevision for growth)
-    - Apply Interfaces between layers (Ports and adapters)
-    - Enrich domain with its own entity and value Objects
-    - Apply the FACADE Design Pattern between models
-- Add of Integration Tests
-- Implementation of Fitness Functions
-- Validation for duplicate properties
-
-
-
+- **Containerization**: Use Docker to containerize the application and database for easier environment setup.
+- **Architecture Upgrade**: Transition to a Hexagonal (Ports and Adapters) architecture with Domain-Driven Design (DDD) and a Modular Monolith approach for scalability:
+  - Implement interfaces between layers.
+  - Enrich the domain with entities and value objects.
+  - Apply the Facade design pattern for model interactions.
+- **Testing**: Add unit tests and integration tests.
+- **Fitness Functions**: Implement fitness functions to ensure architectural quality.
+- **Validation**: Add checks for duplicate properties in data models.
