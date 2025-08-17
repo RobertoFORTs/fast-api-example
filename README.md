@@ -38,6 +38,45 @@ ADR.04: Usage of pydantics BaseModel for data validation, transfer and documenta
 
 ## How to Run
 
+git clone url
+
+Install poetry
+
+poetry shell
+
+install depedencies with poetry
+
+This is a sample data tutorial to create your database and correctly use your url
+
+Create DATABASE:
+psql -U postgres
+CREATE DATABASE simple_api_db;
+\c simple_api_db
+CREATE USER admin WITH PASSWORD '123';
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
+ALTER SCHEMA public OWNER TO admin;
+GRANT ALL PRIVILEGES ON SCHEMA public TO admin;
+
+Set up .env following the template
+ENV= "dev" | "prod"
+
+APP_NAME=
+
+ex.:
+DATABASE_URL=postgresql+asyncpg://admin:123@localhost/simple_api_db
+
+Run migrations:
+export DATABASE_URL=your_url
+alembic revision --autogenerate -m "initial schema"
+alembic upgrade head
+
+Run app:
+
+poetry run uvicorn main:app --reload
+
+access the localhost link and append "/docs" to the url
+
 ## Limitations
 
 - To generate a new migration you have to export the .env in the current terminal before running the alembic command
@@ -56,14 +95,4 @@ ADR.04: Usage of pydantics BaseModel for data validation, transfer and documenta
 - Validation for duplicate properties
 
 
-psql -U postgres
-CREATE DATABASE simple_api_db;
-\c simple_api_db
-CREATE USER admin WITH PASSWORD '123';
-DROP SCHEMA public CASCADE;
-CREATE SCHEMA public;
-ALTER SCHEMA public OWNER TO admin;
-GRANT ALL PRIVILEGES ON SCHEMA public TO admin;
-export DATABASE_URL=your_url
-alembic revision --autogenerate -m "initial schema"
-alembic upgrade head
+
