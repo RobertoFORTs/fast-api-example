@@ -6,6 +6,8 @@ from simple_api.api.v1.routers import router as v1_router
 from fastapi.middleware.cors import CORSMiddleware
 import time
 
+from simple_api.infra.exceptions.exceptions import ExceptionHandlers
+
 async def logging_middleware(request: Request, call_next):
     start = time.time()
     response = await call_next(request)
@@ -44,6 +46,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+ExceptionHandlers.register(app)
 configure_middlewares(app)
 
 @app.get("/", tags=["root"])
