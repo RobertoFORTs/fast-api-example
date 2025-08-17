@@ -14,7 +14,6 @@ class BookingCreate(BaseModel):
         ...,
         min_length=1,
         max_length=255,
-        pattern=r'^[a-zA-Z\s]+$',
         example="John Doe"
     )
     client_email: EmailStr = Field(

@@ -4,7 +4,7 @@ from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy import MetaData
 from simple_api.core.config import settings
 
-DATABASE_URL = settings.database_url.replace("postgresql://", "postgresql+asyncpg://")
+DATABASE_URL = settings.database_url
 
 engine: AsyncEngine = create_async_engine(
     DATABASE_URL,
