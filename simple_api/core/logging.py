@@ -2,7 +2,7 @@ from simple_api.core.config import settings
 import structlog
 import sys
 
-ENV = settings.env  # "dev" or "prod"
+ENV = settings.env
 
 if ENV == "dev":
     renderer = structlog.dev.ConsoleRenderer(colors=True)

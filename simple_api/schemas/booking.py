@@ -7,7 +7,7 @@ from decimal import Decimal
 
 class BookingCreate(BaseModel):
     property_id: UUID
-    client_name: str = Field(..., min_length=1, max_length=255)
+    client_name: str = Field(..., min_length=1, max_length=255, pattern=r'^[a-zA-Z\s]+$')
     client_email: EmailStr
     start_date: date
     end_date: date

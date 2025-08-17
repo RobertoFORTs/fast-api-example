@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Optional
+from simple_api.domain.exceptions.domain_exception import ConflictException, NotFoundException, ValidationException
 from simple_api.infra.models.booking import Booking
 from simple_api.infra.repositories.booking_repository import BookingRepository
 from simple_api.infra.repositories.property_repository import PropertyRepository
@@ -25,23 +25,20 @@ class BookingService:
         self.calc_price_uc = calc_price_uc
 
     async def create_booking(self, booking_in: BookingCreate) -> BookingResponseWithPrice:
-  
         property_obj = await self.property_repo.get_by_id(booking_in.property_id)
         if not property_obj:
-            raise ValueError("Property Not Found")
+            raise NotFoundException("Property not found")
 
         self.validate_dates_uc.execute(booking_in.start_date, booking_in.end_date)
 
         is_available = await self.check_availability_uc.execute(
             booking_in.property_id, booking_in.start_date, booking_in.end_date
         )
-        if is_available == False:
-            raise ValueError("Property not available at given dates")
-        
-        exceeds_maximum_capacity = booking_in.guests_quantity > property_obj.capacity
+        if not is_available:
+            raise ConflictException("Property not available at given dates")
 
-        if exceeds_maximum_capacity:
-            raise ValueError("Number of guests exceeds maximum capacity")
+        if booking_in.guests_quantity > property_obj.capacity:
+            raise ValidationException("Number of guests exceeds maximum capacity")
 
         price = self.calc_price_uc.execute(
             property_obj.price_per_night, booking_in.start_date, booking_in.end_date
@@ -55,6 +52,7 @@ class BookingService:
             "price": price
         })
 
+
     async def list_bookings(self, filters: BookingFilter) -> PaginatedBookingResponse:
         result = await self.booking_repo.get_filtered(filters)
 
@@ -64,10 +62,9 @@ class BookingService:
         return PaginatedBookingResponse(total=total, items=items)
     
     async def cancel_booking(self, booking_id: str):
-        
         booking = await self.booking_repo.get_by_id(booking_id)
         if not booking:
-            raise ValueError("Reserva não encontrada")
+            raise NotFoundException("Booking not found")
         await self.booking_repo.delete(booking.id)
     
     async def is_available(self, property_id: str, start_date: date, end_date: date) -> bool:

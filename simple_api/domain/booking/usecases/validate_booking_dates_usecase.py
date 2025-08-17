@@ -1,10 +1,11 @@
 from datetime import date
+from simple_api.domain.exceptions.domain_exception import ValidationException
 
 class ValidateBookingDatesUseCase:
     def execute(self, start_date: date, end_date: date) -> None:
         
         if start_date < date.today():
-            raise ValueError("Não é possível fazer reservas em datas passadas")
+            raise ValidationException("Não é possível fazer reservas em datas passadas")
 
         if end_date <= start_date:
-            raise ValueError("A data final deve ser posterior à data inicial")
+            raise ValidationException("A data final deve ser posterior à data inicial")
