@@ -64,5 +64,6 @@ DROP SCHEMA public CASCADE;
 CREATE SCHEMA public;
 ALTER SCHEMA public OWNER TO admin;
 GRANT ALL PRIVILEGES ON SCHEMA public TO admin;
+export DATABASE_URL=your_url
 alembic revision --autogenerate -m "initial schema"
 alembic upgrade head
