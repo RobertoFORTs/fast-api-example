@@ -23,7 +23,7 @@ class BookingController:
     async def list_bookings(self, filters: BookingFilter = Depends(), service: BookingService = Depends(get_booking_service)):
         return await service.list_bookings(filters)
 
-    async def cancel_booking(self, booking_id: str, service: BookingService = Depends(get_booking_service)):
+    async def cancel_booking(self, booking_id: UUID, service: BookingService = Depends(get_booking_service)):
         await service.cancel_booking(booking_id)
         return {"message": "Reserva cancelada com sucesso"}
 

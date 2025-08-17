@@ -62,7 +62,7 @@ class BookingService:
 
         return PaginatedBookingResponse(total=total, items=items)
     
-    async def cancel_booking(self, booking_id: str):
+    async def cancel_booking(self, booking_id: UUID):
         booking = await self.booking_repo.get_by_id(booking_id)
         if not booking:
             raise NotFoundException("Booking not found")
