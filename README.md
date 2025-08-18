@@ -40,6 +40,12 @@ A generic base repository pattern was implemented to provide a consistent interf
 **ADR.04: Pydantic BaseModel**  
 Pydantic's `BaseModel` is used for data validation, transfer, and documentation. It integrates seamlessly with Swagger for API documentation and provides robust validation for input/output data.
 
+**ADR.05: Database Seeding**  
+A database seeding script will execute on the first application startup. The seeder will **not run in production** and will **only execute once** to prevent duplicate data.
+
+**ADR.06: Pagination**  
+While the challenge required only filtering, pagination was added to listing endpoints to improve performance and manage (hypothetical)large datasets efficiently.
+
 ---
 
 ## How to Run
@@ -49,13 +55,14 @@ Follow these steps to set up and run the API locally:
 1. **Clone the Repository**  
    ```bash
    git clone <repository-url>
-   cd simple_api
+   cd fast-api-example
    ```
 
 2. **Install Poetry**  
    Ensure Poetry is installed. If not, install it using:
    ```bash
-   pip install poetry
+   curl -sSL https://install.python-poetry.org | python3 -
+   poetry --version
    ```
 
 3. **Activate Poetry Virtual Environment**  
@@ -69,10 +76,10 @@ Follow these steps to set up and run the API locally:
    poetry install
    ```
 
-5. **Set Up the Database**  
-   Create a PostgreSQL database and user with the following commands:
+5. **Set Up the Database**
+   Outside Poetry's virtual environment, use your terminal to create a PostgreSQL database and user with these commands:
    ```sql
-   psql -U postgres
+   sudo -u postgres psql
    CREATE DATABASE simple_api_db;
    \c simple_api_db
    CREATE USER admin WITH PASSWORD '123';
@@ -90,17 +97,16 @@ Follow these steps to set up and run the API locally:
    DATABASE_URL=postgresql+asyncpg://admin:123@localhost/simple_api_db
    ```
 
-7. **Run Database Migrations**  
-   Export the `DATABASE_URL` and apply migrations:
+7. **Run Database Migrations**
+   While inside Poetry’s virtual environment, export DATABASE_URL and run the migrations:
    ```bash
-   export DATABASE_URL=postgresql+asyncpg://admin:123@localhost/simple_api_db
+   export DATABASE_URL="postgresql+asyncpg://admin:123@localhost/simple_api_db"
    alembic upgrade head
    ```
 
 8. **Run the Application**  
-   Start the FastAPI server:
+   While inside Poetry’s virtual environment, start the FastAPI server:
    ```bash
-   poetry shell
    cd simple_api
    poetry run uvicorn main:app --reload
    ```
