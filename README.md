@@ -8,6 +8,7 @@ A basic API project designed for demonstration and learning purposes.
 - [Architecture](#architecture)
 - [How to Run](#how-to-run)
 - [Testing](#testing)
+- [Functional Requirements](#functional-requirements)
 - [Limitations](#limitations)
 - [Possible Improvements](#possible-improvements)
 
@@ -69,15 +70,19 @@ Follow these steps to set up and run the API locally:
    ```bash
    poetry shell
    ```
+   or use
+   ```bash
+   poetry env activate
+   ```
 
-4. **Install Dependencies**  
+5. **Install Dependencies**  
    Install project dependencies using Poetry:
    ```bash
    poetry install
    ```
 
-5. **Set Up the Database**
-   Outside Poetry's virtual environment, use your terminal to create a PostgreSQL database and user with these commands:
+6. **Set Up the Database**
+   Outside Poetry's virtual environment, use your terminal(Ubuntu) to create a PostgreSQL database and user with these commands:
    ```sql
    sudo -u postgres psql
    CREATE DATABASE simple_api_db;
@@ -89,7 +94,7 @@ Follow these steps to set up and run the API locally:
    GRANT ALL PRIVILEGES ON SCHEMA public TO admin;
    ```
 
-6. **Configure Environment Variables**  
+7. **Configure Environment Variables**  
    Create a `.env` file based on the template below:
    ```env
    ENV="dev" # or "prod"
@@ -97,21 +102,21 @@ Follow these steps to set up and run the API locally:
    DATABASE_URL=postgresql+asyncpg://admin:123@localhost/simple_api_db
    ```
 
-7. **Run Database Migrations**
+8. **Run Database Migrations**
    While inside Poetry’s virtual environment, export DATABASE_URL and run the migrations:
    ```bash
    export DATABASE_URL="postgresql+asyncpg://admin:123@localhost/simple_api_db"
    alembic upgrade head
    ```
 
-8. **Run the Application**  
+9. **Run the Application**  
    While inside Poetry’s virtual environment, start the FastAPI server:
    ```bash
    cd simple_api
    poetry run uvicorn main:app --reload
    ```
 
-9. **Access the API**  
+10. **Access the API**  
    Open a browser and navigate to:
    ```
    http://localhost:3000/docs
@@ -122,6 +127,57 @@ Follow these steps to set up and run the API locally:
 ## Testing
 
 To test the API, use the interactive Swagger UI at `http://localhost:3000/docs` to explore and test endpoints. Ensure the application and database are running before testing.
+
+### Unit Testing
+This application tests its core domain with unit tests.
+To run the unit tests, make sure you are in the root directory of the project. You can execute all tests using **pytest** with verbose output:
+
+```bash
+pytest -v
+```
+
+---
+
+## Functional Requirements
+
+### 1. Property Creation
+- Endpoint to create a new property
+
+### 2. List Properties
+- Endpoint to list all available properties in the system
+- Supports filtering by:
+  - Neighborhood, city, or state
+  - Maximum capacity
+  - Maximum price
+- Filtering by neighborhood, city, or state returns all matching properties
+- Pagination is supported for list endpoints
+
+
+### 3. Create a Booking
+- User can create a booking for a property
+- System validations:
+  - Property availability for requested dates
+  - Guest count does not exceed property capacity
+  - Booking dates are valid (end date after start date, no bookings in the past)
+  - Prevent overlapping bookings, considering check-in/check-out logic:
+    - If a booking ends on day 10, a new booking can start on day 10
+    - If a booking starts on day 1, another booking can end on day 1
+- If validations pass, the booking is created; otherwise, the API returns a costumized domain error
+- The total price is automatically calculated as the sum of nightly rates multiplied by the number of nights
+
+### 4. List Bookings
+- Endpoint to list all bookings for:
+  - A specific property
+  - A specific client (by email)
+- Pagination is supported
+
+### 5. Cancel a Booking
+- Endpoint to cancel an existing booking
+
+### 6. Check Availability
+- Endpoint to check property availability for a given date range
+- Considers existing bookings and ensures no overlap according to check-in/check-out logic
+
 
 ---
 
@@ -140,6 +196,7 @@ To test the API, use the interactive Swagger UI at `http://localhost:3000/docs` 
   - Implement interfaces between layers.
   - Enrich the domain with entities and value objects.
   - Apply the Facade design pattern for model interactions.
-- **Testing**: Add unit tests and integration tests.
+- **Semantic**: Moving check availability endpoint to property router
+- **Testing**: Add integration tests.
 - **Fitness Functions**: Implement fitness functions to ensure architectural quality.
 - **Validation**: Add checks for duplicate properties in data models.
