@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from sqlalchemy.exc import SQLAlchemyError
-from infra.db import engine, get_db
+from simple_api.infra.db import get_db, get_engine, get_sessionmaker, init_engine
 from core.logging import log
 from scripts.init_db import init_properties, init_bookings
 from simple_api.infra.models.db_meta import DBMeta
@@ -12,6 +12,9 @@ async def lifespan(app: FastAPI):
     log.info("Application startup")
 
     try:
+        init_engine()
+        engine = get_engine()
+
         async with engine.connect() as conn:
             log.info("Database connection successful!")
 
@@ -49,3 +52,4 @@ async def lifespan(app: FastAPI):
 
     yield
     log.info("Application shutdown")
+    await engine.dispose()

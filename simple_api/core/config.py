@@ -1,11 +1,11 @@
-from typing import Literal
+from typing import Literal, Optional
 from pydantic import Field
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
-    env: Literal["dev", "prod"] = "dev"
+    env: Literal["dev", "prod", "test"] = "dev"
     app_name: str = "simple-api"
-    database_url: str = Field(..., env="DATABASE_URL")
+    database_url: Optional[str] = None
 
     class Config:
         env_file = "../.env"
